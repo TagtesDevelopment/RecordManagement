@@ -1,0 +1,147 @@
+<html>
+  <head>
+   <title>Bootstrap Live Search Plugin - One of the Best Plugin Select Box with Live Search Option</title>  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    
+	
+  </head>
+<body>
+  <div class="container">
+  <h2>One of the Best Plugin for Select Box with Data Live Search Option</h2>
+    <div class="row">
+     <select class="js-example-basic-single" name="state">
+  <option value="AL">Alabama</option>
+    ...
+  <option value="WY">Wyoming</option>
+</select>
+    
+    </div>
+	
+	
+  </div>
+  <select class="form-control" style="z-index:10000; width: auto;position:absolute;display:none" id="ddlTamilHelp" multiple>
+</select>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+ 
+
+var municipes = [{
+	  "code": "47",
+	  "name": "திருக்குறுங்குடி"
+  }, {
+	  "code": "48",
+	  "name": "கோவில்குளம்"
+  }, {
+	  "code": "49",
+	  "name": "திருநெல்வேலி"
+  }, {
+	  "code": "50",
+	  "name": "சிவகங்கை"
+  }, {
+	  "code": "51",
+	  "name": "சிவகங்"
+  }, {
+	  "code": "52",
+	  "name": "குறுங்குடி"
+  }];
+$(document).ready(function() {
+    $('.js-example-basic-single').select2({
+	  placeholder: 'Select an option'
+	  });
+	
+});
+
+        
+ 
+
+let helpElement, helpStartPos, helpEndPos;
+
+function TamilHelp(obj, e) {
+    console.log(obj);
+    if (e.key == "ArrowDown" && !$("#ddlTamilHelp").is(":hidden")) {
+        $("#ddlTamilHelp").val($("#ddlTamilHelp option:first").val());
+        $("#ddlTamilHelp").focus();
+        e.preventDefault();
+        return;
+    }
+
+    helpElement = obj;
+    helpStartPos = helpElement.selectionStart;
+    helpEndPos = helpElement.selectionEnd;
+    let curValue = $(helpElement).val();
+
+    for (let i = helpEndPos - 1; i >= 0; i--) {
+        if (curValue[i] == " " || curValue[i] =="\n") {
+            break;
+        }
+        helpStartPos = i;
+    }
+
+    for (let i = helpStartPos; i <= curValue.length; i++) {
+        helpEndPos = i;
+        if (curValue[i] == " " || curValue[i] == "\n") {
+            break;
+        }
+    }
+
+    curValue = curValue.slice(helpStartPos, helpEndPos);
+
+    $("#ddlTamilHelp").empty();
+
+    $.get("https://inputtools.google.com/request?text=" + curValue + "&itc=ta-t-i0-und&num=13&cp=0&cs=0&ie=utf-8&oe=utf-8&app=demopage", { async: false }, function (data, status) {
+
+        if (data[0] == "SUCCESS") {
+		console.log(data);
+            data[1][0][1].forEach(function (item, index) {
+                $("#ddlTamilHelp").append($("<option/>").val(item).text(item));
+                $("#ddlTamilHelp").offset({ top: $(helpElement).offset().top + $(helpElement).height() + 22, left: $(helpElement).offset().left });
+                $("#ddlTamilHelp").width($(helpElement).width());
+                $("#ddlTamilHelp").show();
+            });
+        }
+        else
+            $("#ddlTamilHelp").hide()
+    });
+}
+
+function BindHelpText() {
+
+    let curValue = $(helpElement).val();
+    for (let i = helpStartPos; i <= curValue.length; i++) {
+        helpEndPos = i;
+        if (curValue[i] == " " || curValue[i] == "\n") {
+            break;
+        }
+    }
+
+    $(helpElement).val($(helpElement).val().slice(0, helpStartPos) + $("#ddlTamilHelp").val() + $(helpElement).val().slice(helpEndPos, $(helpElement).val().length)).focus();
+    $("#ddlTamilHelp").hide();
+
+}
+
+$("#ddlTamilHelp").click(function () {
+    BindHelpText();
+});
+
+$("#ddlTamilHelp").keydown(function (e) {
+    if (e.key == "Enter") {
+        BindHelpText();
+    }
+});
+
+$(document).click(function () {
+    $("#ddlTamilHelp").hide();
+});
+
+  
+  </script>
+</body>
+</html>
